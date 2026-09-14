@@ -1,8 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Github, Linkedin, TreePine, Upload, TriangleAlert, Scan, Loader2 } from "lucide-react";
-import { lazy, Suspense } from "react";
-const MapView = lazy(() => import("../components/MapView"));
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -57,6 +55,14 @@ function Index() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [MapViewComponent, setMapViewComponent] = useState<any>(null);
+
+  useEffect(() => {
+    // Only import the map component in the browser to avoid Leaflet SSR crashes
+    import("../components/MapView").then((mod) => {
+      setMapViewComponent(() => mod.default);
+    });
+  }, []);
 
   useEffect(() => {
     if (imageFile) {
@@ -222,9 +228,13 @@ function Index() {
               </div>
               <div className="grid-paper relative h-[420px] bg-background">
                 {result ? (
-                  <Suspense fallback={<div className="h-full w-full animate-pulse bg-muted" />}>
-                    {typeof window !== "undefined" && <MapView data={result} imageUrl={imageUrl} />}
-                  </Suspense>
+                  MapViewComponent ? (
+                    <MapViewComponent data={result} imageUrl={imageUrl} />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-muted">
+                      <Loader2 className="size-8 animate-spin text-primary" />
+                    </div>
+                  )
                 ) : (
                   <>
                     <svg
