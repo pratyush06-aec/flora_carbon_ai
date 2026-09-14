@@ -47,6 +47,7 @@ export default function MapView({ data, imageUrl }: { data?: any, imageUrl?: str
   return (
     <div className="h-full w-full z-0 relative">
       <MapContainer 
+        key={imageUrl ? imageUrl : (hasData ? 'data-loaded' : 'empty')}
         center={center} 
         zoom={hasData ? (hasGeo ? 18 : -2) : 4} 
         minZoom={hasGeo ? 0 : -5}
