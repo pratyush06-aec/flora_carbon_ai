@@ -93,7 +93,9 @@ function Index() {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
-      const response = await fetch(`${API_URL}/api/analyze/`, {
+      const targetUrl = `${API_URL}/api/analyze/`;
+      
+      const response = await fetch(targetUrl, {
         method: "POST",
         body: formData,
       });
@@ -105,7 +107,8 @@ function Index() {
       const data = await response.json();
       setResult(data);
     } catch (err: any) {
-      setError(err.message || "Failed to analyze image");
+      const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+      setError(`${err.message} (URL: ${API_URL}/api/analyze/)`);
     } finally {
       setLoading(false);
     }
