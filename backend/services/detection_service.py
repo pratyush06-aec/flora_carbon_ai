@@ -21,10 +21,9 @@ class TreeDetector:
         if image_array.shape[0] == 3:
             image_array = np.transpose(image_array, (1, 2, 0))
             
-        # Predict using DeepForest's tiled prediction for large images
-        # We can use predict_tile if the image is large, or predict_image for smaller ones
-        # For this MVP, predict_tile handles both safely
-        boxes = self.model.predict_tile(image=image_array)
+        # For this MVP on a free-tier CPU, predict_tile takes too long and causes 100s timeouts.
+        # predict_image is much faster (it resizes internally) at the cost of some accuracy on huge images.
+        boxes = self.model.predict_image(image=image_array)
         
         if boxes is None or boxes.empty:
             return pd.DataFrame(columns=["xmin", "ymin", "xmax", "ymax", "label", "score"])
