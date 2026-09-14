@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Github, Linkedin, TreePine, Upload, TriangleAlert, Scan, Loader2 } from "lucide-react";
-import MapView from "../components/MapView";
+import { lazy, Suspense } from "react";
+const MapView = lazy(() => import("../components/MapView"));
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -221,7 +222,9 @@ function Index() {
               </div>
               <div className="grid-paper relative h-[420px] bg-background">
                 {result ? (
-                  <MapView data={result} imageUrl={imageUrl} />
+                  <Suspense fallback={<div className="h-full w-full animate-pulse bg-muted" />}>
+                    {typeof window !== "undefined" && <MapView data={result} imageUrl={imageUrl} />}
+                  </Suspense>
                 ) : (
                   <>
                     <svg
