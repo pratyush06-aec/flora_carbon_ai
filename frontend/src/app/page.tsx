@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Upload, Activity, Layers, TreeDeciduous } from "lucide-react";
 
 // Dynamically import the map to avoid SSR issues with leaflet window object
@@ -14,6 +14,17 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (imageFile) {
+      const url = URL.createObjectURL(imageFile);
+      setImageUrl(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setImageUrl(null);
+    }
+  }, [imageFile]);
 
   const handleAnalyze = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,15 +137,27 @@ export default function Home() {
             </div>
             <div className="brutal-card p-4 text-center">
               <p className="text-xs font-bold uppercase mb-1 opacity-80">Total Canopy</p>
-              <p className="text-2xl font-black">{result?.summary.total_canopy_area_m2 ? result.summary.total_canopy_area_m2.toFixed(1) + " m²" : "-- m²"}</p>
+              <p className="text-2xl font-black">
+                {result?.summary.total_canopy_area_m2 !== undefined && result?.summary.total_canopy_area_m2 !== null 
+                  ? `${result.summary.total_canopy_area_m2.toFixed(1)} ${result.image.gsd_m_per_pixel ? 'm²' : 'px²'}` 
+                  : "--"}
+              </p>
             </div>
             <div className="brutal-card p-4 text-center">
               <p className="text-xs font-bold uppercase mb-1 opacity-80">Tree Density</p>
-              <p className="text-2xl font-black">{result?.summary.crown_density_per_hectare ? result.summary.crown_density_per_hectare.toFixed(1) + " /ha" : "-- /ha"}</p>
+              <p className="text-2xl font-black">
+                {result?.summary.crown_density_per_hectare !== undefined && result?.summary.crown_density_per_hectare !== null 
+                  ? `${result.summary.crown_density_per_hectare.toFixed(1)} ${result.image.gsd_m_per_pixel ? '/ha' : '/M px²'}` 
+                  : "--"}
+              </p>
             </div>
             <div className="brutal-card p-4 text-center">
               <p className="text-xs font-bold uppercase mb-1 opacity-80">Mean Crown</p>
-              <p className="text-2xl font-black">{result?.summary.mean_crown_area_m2 ? result.summary.mean_crown_area_m2.toFixed(1) + " m²" : "-- m²"}</p>
+              <p className="text-2xl font-black">
+                {result?.summary.mean_crown_area_m2 !== undefined && result?.summary.mean_crown_area_m2 !== null 
+                  ? `${result.summary.mean_crown_area_m2.toFixed(1)} ${result.image.gsd_m_per_pixel ? 'm²' : 'px²'}` 
+                  : "--"}
+              </p>
             </div>
           </div>
 
@@ -145,7 +168,7 @@ export default function Home() {
                 Map Visualization pending analysis...
               </div>
             )}
-            <MapView data={result} />
+            <MapView data={result} imageUrl={imageUrl} />
           </div>
 
         </section>

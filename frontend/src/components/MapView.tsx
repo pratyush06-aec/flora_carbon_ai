@@ -1,6 +1,6 @@
 "use client";
 
-import { MapContainer, TileLayer, Polygon, Marker, Popup, FeatureGroup, Rectangle } from "react-leaflet";
+import { MapContainer, TileLayer, Polygon, Marker, Popup, FeatureGroup, Rectangle, ImageOverlay } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
 import L from "leaflet";
@@ -13,7 +13,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-export default function MapView({ data }: { data?: any }) {
+export default function MapView({ data, imageUrl }: { data?: any, imageUrl?: string | null }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -49,6 +49,8 @@ export default function MapView({ data }: { data?: any }) {
       <MapContainer 
         center={center} 
         zoom={hasData ? (hasGeo ? 18 : -2) : 4} 
+        minZoom={hasGeo ? 0 : -5}
+        maxZoom={hasGeo ? 22 : 5}
         crs={crs}
         scrollWheelZoom={true} 
         style={{ height: "100%", width: "100%", zIndex: 0 }}
@@ -60,8 +62,14 @@ export default function MapView({ data }: { data?: any }) {
           />
         )}
         
-        {!hasGeo && hasData && (
-          // In simple CRS, we can draw a rectangle representing the image bounds
+        {!hasGeo && hasData && imageUrl && (
+          <ImageOverlay 
+            url={imageUrl} 
+            bounds={[[0, 0], [data.image.height, data.image.width]]} 
+          />
+        )}
+        {!hasGeo && hasData && !imageUrl && (
+          // Fallback if no image provided
           <Rectangle bounds={[[0, 0], [data.image.height, data.image.width]]} pathOptions={{ color: 'green', fillOpacity: 0.1 }} />
         )}
 
@@ -78,11 +86,12 @@ export default function MapView({ data }: { data?: any }) {
               [pos[0] + 0.00005, pos[1] + 0.00005]
             ];
           } else {
-            // Leaflet Simple CRS expects [y, x]
-            pos = [tree.centroid_pixel.y, tree.centroid_pixel.x];
+            // Leaflet Simple CRS expects [y, x]. Image top is y=height, bottom is y=0.
+            // Invert the y coordinates from the model (which has y=0 at top) to match Leaflet.
+            pos = [data.image.height - tree.centroid_pixel.y, tree.centroid_pixel.x];
             bounds = [
-              [tree.bbox.ymin, tree.bbox.xmin],
-              [tree.bbox.ymax, tree.bbox.xmax]
+              [data.image.height - tree.bbox.ymax, tree.bbox.xmin],
+              [data.image.height - tree.bbox.ymin, tree.bbox.xmax]
             ];
           }
 

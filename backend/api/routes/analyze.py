@@ -117,6 +117,16 @@ async def analyze_image(
         tree_count = len(trees)
         mean_area = float(total_canopy / tree_count) if tree_count > 0 else 0.0
         
+        # Calculate density
+        density = 0.0
+        if tree_count > 0:
+            if gsd_x and gsd_y:
+                area_ha = (meta["width"] * meta["height"] * gsd_x * gsd_y) / 10000.0
+                density = float(tree_count / area_ha) if area_ha > 0 else 0.0
+            else:
+                area_1Mpx = (meta["width"] * meta["height"]) / 1000000.0
+                density = float(tree_count / area_1Mpx) if area_1Mpx > 0 else 0.0
+        
         res = AnalysisResult(
             analysis_id=str(uuid.uuid4()),
             image=ImageInfo(
@@ -130,9 +140,9 @@ async def analyze_image(
             aoi=AoiInfo(source=aoi_source, area_m2=None),
             summary=AnalysisSummary(
                 tree_count=tree_count,
-                total_canopy_area_m2=float(total_canopy) if gsd_x else None,
-                mean_crown_area_m2=mean_area if gsd_x else None,
-                crown_density_per_hectare=None,
+                total_canopy_area_m2=float(total_canopy),
+                mean_crown_area_m2=mean_area,
+                crown_density_per_hectare=density,
                 segmentation_success_count=seg_success,
                 circular_fallback_count=circ_fallback
             ),
