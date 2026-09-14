@@ -4,7 +4,7 @@ rasterio
 geopandas
 shapely
 deepforest
-opencv-python
+opencv-python-headless
 scikit-image
 fastkml
 pyproj
