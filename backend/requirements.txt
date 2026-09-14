@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+rasterio
+geopandas
+shapely
+deepforest
+opencv-python
+scikit-image
+fastkml
+pyproj
+pytest
+python-multipart

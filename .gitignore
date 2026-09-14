@@ -1,0 +1,8 @@
+venv/
+__pycache__/
+*.pyc
+.env
+lightning_logs/
+dummy.jpg
+frontend/node_modules/
+frontend/.next/

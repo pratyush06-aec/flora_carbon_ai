@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f0fdf4; /* green-50 */
+  --foreground: #064e3b; /* green-900 */
+  --primary: #22c55e;    /* green-500 */
+  --border-color: #064e3b; 
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #064e3b; /* green-900 */
+    --foreground: #ecfdf5; /* emerald-50 */
+    --primary: #10b981;    /* emerald-500 */
+    --border-color: #ecfdf5; 
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-border-color: var(--border-color);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .brutal-border {
+    border: 3px solid var(--border-color);
+  }
+  
+  .brutal-shadow {
+    box-shadow: 5px 5px 0px 0px var(--border-color);
+  }
+  
+  .brutal-shadow-hover:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 3px 3px 0px 0px var(--border-color);
+  }
+  
+  .brutal-shadow-active:active {
+    transform: translate(5px, 5px);
+    box-shadow: 0px 0px 0px 0px var(--border-color);
+  }
+
+  .brutal-card {
+    border: 3px solid var(--border-color);
+    box-shadow: 5px 5px 0px 0px var(--border-color);
+    background-color: var(--background);
+    padding: 1.5rem;
+  }
+
+  .brutal-button {
+    border: 3px solid var(--border-color);
+    box-shadow: 5px 5px 0px 0px var(--border-color);
+    background-color: var(--primary);
+    color: var(--background);
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.1s ease;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  .brutal-input {
+    border: 3px solid var(--border-color);
+    box-shadow: 5px 5px 0px 0px var(--border-color);
+    background-color: var(--background);
+    color: var(--foreground);
+    padding: 0.75rem;
+    font-family: inherit;
+  }
+  
+  .brutal-input:focus {
+    outline: none;
+    background-color: color-mix(in srgb, var(--background) 90%, var(--primary) 10%);
+  }
+}
