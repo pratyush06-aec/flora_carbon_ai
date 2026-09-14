@@ -157,5 +157,7 @@ async def analyze_image(
         return res
         
     except Exception as e:
-        logging.error(f"Analysis failed: {str(e)}")
-        raise HTTPException(status_code=500, detail="An internal error occurred during analysis.")
+        import traceback
+        err_msg = traceback.format_exc()
+        logging.error(f"Analysis failed: {err_msg}")
+        raise HTTPException(status_code=500, detail=f"Internal Error: {str(e)}\n\n{err_msg}")

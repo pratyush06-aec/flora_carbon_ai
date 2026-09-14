@@ -34,12 +34,10 @@ class TreeDetector:
         
         # Downscale to prevent OOM on 512MB Render free tier
         if orig_h > max_dim or orig_w > max_dim:
-            import cv2
             scale = max_dim / max(orig_h, orig_w)
             new_h = int(orig_h * scale)
             new_w = int(orig_w * scale)
             # Resize using cv2 (already installed via OpenCV) or PIL
-            # We'll use cv2 since rasterio env usually has cv2 or we can use PIL
             try:
                 import cv2
                 pred_image = cv2.resize(image_array, (new_w, new_h))
