@@ -101,7 +101,14 @@ function Index() {
       });
 
       if (!response.ok) {
-        throw new Error(`Error: ${response.status} ${response.statusText}`);
+        let errDetail = `${response.statusText}`;
+        try {
+          const errData = await response.json();
+          errDetail = errData.detail || errDetail;
+        } catch (e) {
+          // ignore parsing error if not json
+        }
+        throw new Error(`Error ${response.status}: ${errDetail}`);
       }
 
       const data = await response.json();
