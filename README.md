@@ -115,7 +115,12 @@ npm run dev
 ```
 > The web application will now be running on `http://localhost:5173`.
 
----
+## 🚀 Deployment
+
+The application is designed to be easily deployed on modern cloud platforms:
+
+- **Frontend (Vercel)**: The React/Vite frontend is deployed on Vercel as a Serverless application, optimized using the `@lovable.dev/vite-tanstack-config` Vercel preset.
+- **Backend (Render)**: The FastAPI backend, powered by DeepForest and GDAL, is containerized and hosted on Render.
 
 ## 🧪 How to Test the Application
 1. Open your browser and navigate to `http://localhost:5173`.
@@ -136,7 +141,7 @@ npm run dev
 
 ## 📸 Gallery / Proof of Work
 
-Here are some sample outputs showing the detection and mapping pipeline in action:
+Here are some sample outputs and testing data results showing the detection and mapping pipeline in action:
 
 ![Tree Crown Analyzer Dashboard](assets/screenshot_1.png)
 
@@ -144,4 +149,10 @@ Here are some sample outputs showing the detection and mapping pipeline in actio
 
 ---
 
-Developed by the Flora Carbon AI Team.
+## 📬 Contact & Socials
+
+Developed by Pratyush Dutta. Let's connect!
+
+- **LinkedIn**: [Pratyush Dutta](https://www.linkedin.com/in/pratyush-dutta-221b94302/)
+- **GitHub**: [@pratyush06-aec](https://github.com/pratyush06-aec)
+- **X (Twitter)**: [@pd_0406official](https://x.com/pd_0406official)
