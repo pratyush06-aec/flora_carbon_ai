@@ -7,8 +7,6 @@ WORKDIR /app
 # Install system dependencies required for OpenCV, Rasterio, and GeoPandas
 RUN apt-get update && apt-get install -y \
     build-essential \
-    libgl1-mesa-glx \
-    libglib2.0-0 \
     gdal-bin \
     libgdal-dev \
     && rm -rf /var/lib/apt/lists/*
