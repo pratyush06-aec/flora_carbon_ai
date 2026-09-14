@@ -55,8 +55,8 @@ The pipeline leverages several models and mathematical formulas to derive meanin
 ## 🛠️ Tech Stack & Dependencies
 
 ### **Frontend**
-- **Framework**: Next.js 14, React
-- **Styling**: Vanilla CSS with a custom "Neubrutalism" green/dark design system
+- **Framework**: Vite, React, TanStack Router
+- **Styling**: Tailwind CSS with a custom "Neubrutalism" green/dark design system
 - **Mapping**: Leaflet, React-Leaflet
 - **Icons**: Lucide React
 
@@ -113,12 +113,12 @@ npm install
 # Start the development server
 npm run dev
 ```
-> The web application will now be running on `http://localhost:3000`.
+> The web application will now be running on `http://localhost:5173`.
 
 ---
 
 ## 🧪 How to Test the Application
-1. Open your browser and navigate to `http://localhost:3000`.
+1. Open your browser and navigate to `http://localhost:5173`.
 2. Upload a valid **GeoTIFF (.tif)** file containing high-resolution satellite imagery (RGB).
 3. (Optional) Upload a **KML** boundary file.
 4. (Optional) Provide the **Ground Sample Distance (m/px)** if your GeoTIFF does not have internal georeferencing metadata.
@@ -131,6 +131,16 @@ npm run dev
 - **Estimation:** Area calculations are automated estimates derived from computer-vision segmentation and should not replace field-validated measurements.
 - **Scale:** Calculating square meters requires a valid Ground Sample Distance (GSD). If the GeoTIFF lacks transform data and GSD is not provided, the API will fallback to computing raw pixel areas.
 - **Canopy Overlap:** Densely packed forest canopies may result in under-segmentation (treating grouped trees as a single large crown).
+
+---
+
+## 📸 Gallery / Proof of Work
+
+Here are some sample outputs showing the detection and mapping pipeline in action:
+
+![Tree Crown Analyzer Dashboard](assets/screenshot_1.png)
+
+![Tree Crown Analyzer Analysis Results](assets/screenshot_2.png)
 
 ---
 
