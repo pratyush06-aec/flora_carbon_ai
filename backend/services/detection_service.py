@@ -25,19 +25,44 @@ class TreeDetector:
         Detects trees in an RGB image array (channels last: H, W, C).
         Returns a DataFrame with columns: [xmin, ymin, xmax, ymax, label, score].
         """
-        # DeepForest predicts on images in BGR format typically if loaded via cv2, 
-        # but predict_image accepts standard RGB arrays.
-        # Ensure image is channels last (H, W, C).
         if image_array.shape[0] == 3:
             image_array = np.transpose(image_array, (1, 2, 0))
             
-        # For this MVP on a free-tier CPU, predict_tile takes too long and causes 100s timeouts.
-        # predict_image is much faster (it resizes internally) at the cost of some accuracy on huge images.
-        boxes = self.model.predict_image(image=image_array)
+        orig_h, orig_w = image_array.shape[:2]
+        max_dim = 800
+        scale = 1.0
+        
+        # Downscale to prevent OOM on 512MB Render free tier
+        if orig_h > max_dim or orig_w > max_dim:
+            import cv2
+            scale = max_dim / max(orig_h, orig_w)
+            new_h = int(orig_h * scale)
+            new_w = int(orig_w * scale)
+            # Resize using cv2 (already installed via OpenCV) or PIL
+            # We'll use cv2 since rasterio env usually has cv2 or we can use PIL
+            try:
+                import cv2
+                pred_image = cv2.resize(image_array, (new_w, new_h))
+            except ImportError:
+                from PIL import Image
+                img = Image.fromarray(image_array)
+                img = img.resize((new_w, new_h), Image.BILINEAR)
+                pred_image = np.array(img)
+        else:
+            pred_image = image_array
+
+        boxes = self.model.predict_image(image=pred_image)
         
         if boxes is None or boxes.empty:
             return pd.DataFrame(columns=["xmin", "ymin", "xmax", "ymax", "label", "score"])
             
+        # Rescale boxes back to original dimensions
+        if scale != 1.0:
+            boxes["xmin"] = boxes["xmin"] / scale
+            boxes["ymin"] = boxes["ymin"] / scale
+            boxes["xmax"] = boxes["xmax"] / scale
+            boxes["ymax"] = boxes["ymax"] / scale
+
         # Add centroid calculation
         boxes["centroid_x"] = (boxes["xmin"] + boxes["xmax"]) / 2.0
         boxes["centroid_y"] = (boxes["ymin"] + boxes["ymax"]) / 2.0
