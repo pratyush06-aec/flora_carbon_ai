@@ -19,6 +19,10 @@ COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Pre-download DeepForest model weights so they are baked into the Docker image
+# This saves ~30 seconds on cold starts in Render and prevents timeouts
+RUN python -c "from deepforest import main; model = main.deepforest(); model.use_release()"
+
 # Copy the rest of the application code
 COPY . .
 
