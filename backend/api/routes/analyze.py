@@ -64,6 +64,12 @@ async def analyze_image(
             
         # 4. Detection
         detector = get_detector()
+        if not detector.ready:
+            raise HTTPException(
+                status_code=503, 
+                detail="The AI model is still warming up (Cold Start). Please wait a few minutes and try again."
+            )
+            
         boxes = detector.detect_trees(image_array)
         
         trees = []

@@ -19,6 +19,18 @@ app.add_middleware(
 app.include_router(analyze.router, prefix="/api/analyze", tags=["Analyze"])
 app.include_router(kml.router, prefix="/api/kml", tags=["KML"])
 
+from services.detection_service import init_detector_background
+
+@app.on_event("startup")
+def startup_event():
+    # Start loading the heavy AI model in the background immediately
+    # This allows Uvicorn to bind to the port instantly, preventing Render deploy timeouts!
+    init_detector_background()
+
+@app.get("/", tags=["Health"])
+def root_check():
+    return {"status": "ok", "message": "API is running"}
+
 @app.get("/health", tags=["Health"])
 def health_check():
     return {"status": "ok"}

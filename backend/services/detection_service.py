@@ -4,12 +4,22 @@ import numpy as np
 
 class TreeDetector:
     def __init__(self):
+        self.model = None
+        self.ready = False
+
+    def load_model(self):
+        if self.ready:
+            return
         # Initialize and load the pre-trained DeepForest model
+        import logging
+        logging.info("Starting background AI model initialization...")
         self.model = main.deepforest()
         if hasattr(self.model, "use_release"):
             self.model.use_release()
-        elif hasattr(self.model, "use_bird_release"): # Just a safe fallback logic
+        elif hasattr(self.model, "use_bird_release"):
             pass
+        self.ready = True
+        logging.info("AI model successfully initialized and ready for requests.")
     def detect_trees(self, image_array: np.ndarray) -> pd.DataFrame:
         """
         Detects trees in an RGB image array (channels last: H, W, C).
@@ -42,3 +52,10 @@ def get_detector() -> TreeDetector:
     if _detector_instance is None:
         _detector_instance = TreeDetector()
     return _detector_instance
+
+def init_detector_background():
+    import threading
+    detector = get_detector()
+    thread = threading.Thread(target=detector.load_model)
+    thread.daemon = True
+    thread.start()
