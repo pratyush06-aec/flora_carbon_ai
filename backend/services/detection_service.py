@@ -1,4 +1,3 @@
-from deepforest import main
 import pandas as pd
 import numpy as np
 
@@ -12,6 +11,7 @@ class TreeDetector:
             return
         # Initialize and load the pre-trained DeepForest model
         import logging
+        from deepforest import main
         logging.info("Starting background AI model initialization...")
         self.model = main.deepforest()
         if hasattr(self.model, "use_release"):
