@@ -20,6 +20,38 @@ The architecture uses a decoupled **React/Next.js Frontend** and a **Python/Fast
 
 ---
 
+## 🧮 Algorithms & Calculations
+
+The pipeline leverages several models and mathematical formulas to derive meaningful metrics from raw pixels:
+
+### 1. Tree Detection (DeepForest)
+- **Algorithm**: A deep-learning object detection model (RetinaNet) pre-trained on airborne RGB imagery.
+- **Process**: The image array is fed into the `DeepForest` predictor, which returns bounding boxes `[xmin, ymin, xmax, ymax]` and confidence scores for every detected tree crown.
+
+### 2. Crown Segmentation (Watershed Algorithm)
+- **Algorithm**: Marker-Controlled Watershed Segmentation (`scikit-image`, `opencv`).
+- **Process**: For each bounding box, the image is cropped. The algorithm applies Gaussian blurring and Otsu's thresholding to create a foreground/background map. A distance transform identifies the "peak" (the center of the tree), which acts as a marker. The watershed algorithm then floods from this marker to accurately segment the specific crown canopy from overlapping branches.
+
+### 3. Canopy Area Calculation
+- **Without GSD (Pixels)**: The system sums the number of pixels within the segmented mask. 
+  - *Calculation*: `Area (px²) = Sum of valid canopy pixels`
+- **With GSD (Meters)**: If the image has Ground Sample Distance (e.g., 0.3 m/px) or geographic metadata, the pixel area is scaled to square meters.
+  - *Calculation*: `Area (m²) = Area (px²) × (GSD_X × GSD_Y)`
+
+### 4. Mean Crown Area
+- **Process**: Averages the canopy area across all detected trees to provide a single representative metric.
+- **Calculation**: `Mean Crown Area = Total Canopy Area ÷ Total Trees Detected`
+
+### 5. Tree Density
+- **With GSD (Per Hectare)**: Calculates the number of trees per hectare of the analyzed image.
+  - *Calculation*: `Total Image Area (ha) = (Width × Height × GSD_X × GSD_Y) ÷ 10,000`
+  - *Density*: `Trees per Hectare = Total Trees Detected ÷ Total Image Area (ha)`
+- **Without GSD (Per 1 Million px²)**: Reverts to a relative pixel-density scale.
+  - *Calculation*: `Total Image Area (1M px²) = (Width × Height) ÷ 1,000,000`
+  - *Density*: `Trees per 1M px² = Total Trees Detected ÷ Total Image Area (1M px²)`
+
+---
+
 ## 🛠️ Tech Stack & Dependencies
 
 ### **Frontend**
