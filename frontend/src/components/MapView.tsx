@@ -1,15 +1,8 @@
-import { MapContainer, TileLayer, Marker, Popup, FeatureGroup, Rectangle, ImageOverlay } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import { useEffect, useState } from "react";
-import L from "leaflet";
+// This component MUST NOT be imported on the server side.
+// It is only loaded via dynamic import() inside a useEffect in index.tsx.
+// All leaflet imports are inline to prevent the SSR bundler from resolving them.
 
-// Fix for missing marker icons in Leaflet + Vite
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-});
+import { useEffect, useState } from "react";
 
 export default function MapView({ data, imageUrl }: { data?: any, imageUrl?: string | null }) {
   const [mounted, setMounted] = useState(false);
@@ -20,8 +13,21 @@ export default function MapView({ data, imageUrl }: { data?: any, imageUrl?: str
 
   if (!mounted) return null;
 
+  // Lazy-require leaflet and react-leaflet only after confirming we're in the browser.
+  // These packages reference `window` at the module scope and crash Node.js SSR.
+  const L = require("leaflet");
+  require("leaflet/dist/leaflet.css");
+  const { MapContainer, TileLayer, Marker, Popup, FeatureGroup, Rectangle, ImageOverlay } = require("react-leaflet");
+
+  // Fix for missing marker icons in Leaflet + Vite
+  delete (L.Icon.Default.prototype as any)._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  });
+
   const hasData = data && data.trees && data.trees.length > 0;
-  
   const hasGeo = hasData && data.trees[0].centroid_geo != null;
 
   let center: [number, number] = [20.5937, 78.9629]; // Default India
