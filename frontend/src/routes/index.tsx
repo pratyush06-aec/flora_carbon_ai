@@ -51,7 +51,7 @@ const LIMITATIONS = [
 function Index() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [kmlFile, setKmlFile] = useState<File | null>(null);
-  const [gsd, setGsd] = useState("0.30");
+  const [gsd, setGsd] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
